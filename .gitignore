@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+
+# Local/generated worksheet outputs
+work/
+outputs/
+dist/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# Local environment
+.venv/
+venv/
+.env
+.env.*

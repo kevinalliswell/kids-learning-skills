@@ -1,0 +1,4 @@
+interface:
+  display_name: "练字帖生成"
+  short_description: "生成适合小学生临摹的中文楷书练字帖 PDF 和预览图"
+  default_prompt: "Use $make-handwriting-sheet 根据上传图片或文字生成一页 A4 小学中文练字帖。"
