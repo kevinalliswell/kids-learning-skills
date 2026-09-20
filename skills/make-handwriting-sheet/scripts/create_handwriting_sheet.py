@@ -147,8 +147,7 @@ def wrap_grid_text(text: str, cols: int) -> tuple[list[str], dict[int, str]]:
     return rows, trailing
 
 
-def prepare_grid_lines(section: dict) -> tuple[list[str], dict[int, str]]:
-    cols = int(section.get("cols", 20))
+def prepare_grid_lines(section: dict, cols: int) -> tuple[list[str], dict[int, str]]:
     lines = section.get("lines")
     if lines:
         rows: list[str] = []
@@ -279,7 +278,7 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
         if section_type in {"composition_grid", "large_grid"}:
             cols, cell = grid_defaults(section, section_type)
             font_size = float(section.get("font_size", cell * float(section.get("font_scale", DEFAULT_GRID_FONT_SCALE))))
-            rows, trailing = prepare_grid_lines(section)
+            rows, trailing = prepare_grid_lines(section, cols)
             width = cols * cell
             x = float(section.get("x", (page_w - width) / 2))
             y -= float(section.get("title_gap", 27))
