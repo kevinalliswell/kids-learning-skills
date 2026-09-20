@@ -21,7 +21,9 @@ DEFAULT_COMPOSITION_CELL_MM = 9.0
 DEFAULT_COMPOSITION_COLS = 20
 DEFAULT_LARGE_GRID_CELL_MM = 14.0
 DEFAULT_LARGE_GRID_COLS = 13
+DEFAULT_GRID_FONT_SCALE = 0.78
 DEFAULT_RULED_LINE_GAP_MM = 10.0
+DEFAULT_RULED_FONT_SIZE = 19.0
 DEFAULT_RULED_WIDTH_MM = 180.0
 DEFAULT_RULED_TEXT_INDENT_MM = 10.0
 
@@ -172,6 +174,7 @@ def draw_composition_grid(
     sample_lines: list[str],
     trailing_marks: dict[int, str],
     line_color: str,
+    font_size: float,
 ) -> float:
     rows = len(sample_lines) * 2
     width = cols * cell
@@ -187,7 +190,6 @@ def draw_composition_grid(
         py = top_y - j * cell
         c.line(x, py, x + width, py)
 
-    font_size = min(16.2, cell * 0.74)
     c.setFont("HWKai", font_size)
     c.setFillColor(BLACK)
     for line_idx, line in enumerate(sample_lines):
@@ -237,7 +239,7 @@ def draw_ruled_pair(c: canvas.Canvas, x: float, line_y: float, width: float, sam
     c.line(x, line_y, x + width, line_y)
     c.setFont("HWKai", font_size)
     c.setFillColor(BLACK)
-    c.drawString(x + points_from_mm(DEFAULT_RULED_TEXT_INDENT_MM), line_y + 5.2, sample)
+    c.drawString(x + points_from_mm(DEFAULT_RULED_TEXT_INDENT_MM), line_y + row_gap * 0.18, sample)
 
     blank_y = line_y - row_gap
     c.setStrokeColor(line_color)
@@ -276,6 +278,7 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
 
         if section_type in {"composition_grid", "large_grid"}:
             cols, cell = grid_defaults(section, section_type)
+            font_size = float(section.get("font_size", cell * float(section.get("font_scale", DEFAULT_GRID_FONT_SCALE))))
             rows, trailing = prepare_grid_lines(section)
             width = cols * cell
             x = float(section.get("x", (page_w - width) / 2))
@@ -289,7 +292,7 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
                     for idx, mark in trailing.items()
                     if start <= idx < start + len(chunk)
                 }
-                bottom_y = draw_composition_grid(c, x, y, cols, cell, chunk, chunk_marks, line_color)
+                bottom_y = draw_composition_grid(c, x, y, cols, cell, chunk, chunk_marks, line_color, font_size)
                 start += len(chunk)
                 y = bottom_y - float(section.get("section_gap", 42))
                 if start < len(rows):
@@ -299,7 +302,7 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
                     max_sample_rows = max(1, math.floor((y - bottom_limit) / (cell * 2)))
 
         else:
-            font_size = float(section.get("font_size", 17))
+            font_size = float(section.get("font_size", DEFAULT_RULED_FONT_SIZE))
             row_gap = dimension(section, "row_gap", "row_gap_mm", DEFAULT_RULED_LINE_GAP_MM)
             width = dimension(section, "width", "width_mm", DEFAULT_RULED_WIDTH_MM)
             x = float(section.get("x", (page_w - width) / 2))

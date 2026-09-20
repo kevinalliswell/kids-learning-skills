@@ -20,6 +20,7 @@
 - 大方格：14mm 方格、默认 13 列，适合低年级或刚开始练字。
 - 横线格：一行楷书示范，一行空白横线。
 - 横线间隔默认为 10mm，横线书写宽度为 180mm。
+- 格子示范字默认占格子边长的 78%，横线示范字默认 19pt。
 - 自动避开行首孤立标点。
 - 自动分页，避免长文本挤出页面。
 
@@ -55,6 +56,8 @@ python .\skills\make-handwriting-sheet\scripts\create_handwriting_sheet.py `
 - `large_grid`：`cell_mm` 默认为 `14`，13 列时总宽 182mm。
 - 也可以在 `composition_grid` 中设置 `grid_style: "large_square"` 使用大方格预设。
 - `ruled_lines`：`row_gap_mm` 默认为 `10`，`width_mm` 默认为 `180`。
+- `font_scale`：控制格子里示范字占格子大小的比例，默认 `0.78`。
+- `font_size`：控制示范字精确字号，横线格默认 `19`。
 - 如需低年级田字格，可把 `cell_mm` 调到 `14`，同时减少列数。
 
 常用 section 类型：

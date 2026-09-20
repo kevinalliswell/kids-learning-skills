@@ -16,6 +16,7 @@ description: Create printable A4 Chinese handwriting practice worksheets with Ka
    - Default to a green school-workbook style: outer border, centered title, name/grade blanks, section titles.
    - Use standard KaiTi/Kai-style fonts for sample characters. Prefer `C:\Windows\Fonts\simkai.ttf`, then `C:\Windows\Fonts\STKAITI.TTF`.
    - Default to primary-school-friendly print dimensions: composition grid cells are 9mm square with 20 columns, large square cells are 14mm square with 13 columns, ruled-line spacing is 10mm, and the ruled writing width is 180mm.
+   - Make sample text large enough for copying: grid sample characters default to `font_scale: 0.78` of the cell size, and ruled-line samples default to `font_size: 19`.
    - Use the bundled script `scripts/create_handwriting_sheet.py` for PDF/PNG generation when possible.
 
 3. Follow the practice-row rule.
@@ -70,7 +71,7 @@ Grid options:
 
 - Use `type: "composition_grid"` or `grid_style: "composition"` for 9mm composition cells, 20 columns by default.
 - Use `type: "large_grid"` or `grid_style: "large_square"` for 14mm large square cells, 13 columns by default.
-- Override with `cell_mm` and `cols` when a worksheet needs a custom size.
+- Override with `cell_mm`, `cols`, `font_scale`, or `font_size` when a worksheet needs a custom size.
 
 Use `text` for normal automatic wrapping. Use `lines` when manual line breaks are important; the script still protects against overflow unless `preserve_lines_exact` is set to `true`.
 
@@ -94,3 +95,4 @@ Use `text` for normal automatic wrapping. Use `lines` when manual line breaks ar
 - Put user-facing PDFs and previews under the current task's `outputs/` directory.
 - Use descriptive Chinese filenames, for example `三上一实用书写专项训练_练字帖.pdf`.
 - Use millimeter config keys when controlling paper size: `cell_mm`, `row_gap_mm`, and `width_mm`.
+- Use `font_scale` for grid sample character size, or `font_size` for exact point-size control.
