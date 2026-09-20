@@ -4,6 +4,7 @@
     {
       "title": "一、作文格训练",
       "type": "composition_grid",
+      "grid_style": "composition",
       "cols": 20,
       "cell_mm": 9,
       "lines": [

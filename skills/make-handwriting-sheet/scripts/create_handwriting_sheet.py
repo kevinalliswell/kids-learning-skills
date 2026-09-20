@@ -18,6 +18,9 @@ BLACK = "#111111"
 PUNCTUATION = set("，。！？；：、,.!?;:）】》”’")
 
 DEFAULT_COMPOSITION_CELL_MM = 9.0
+DEFAULT_COMPOSITION_COLS = 20
+DEFAULT_LARGE_GRID_CELL_MM = 14.0
+DEFAULT_LARGE_GRID_COLS = 13
 DEFAULT_RULED_LINE_GAP_MM = 10.0
 DEFAULT_RULED_WIDTH_MM = 180.0
 DEFAULT_RULED_TEXT_INDENT_MM = 10.0
@@ -57,6 +60,30 @@ def dimension(section: dict, pt_key: str, mm_key: str, default_mm: float) -> flo
     if pt_key in section:
         return float(section[pt_key])
     return points_from_mm(default_mm)
+
+
+def grid_style(section: dict, section_type: str) -> str:
+    style = str(section.get("grid_style", "")).strip().lower().replace("-", "_")
+    if style in {"large", "large_square", "big", "big_square", "大方格"}:
+        return "large_square"
+    if style in {"composition", "composition_grid", "作文格"}:
+        return "composition"
+    if section_type == "large_grid":
+        return "large_square"
+    return "composition"
+
+
+def grid_defaults(section: dict, section_type: str) -> tuple[int, float]:
+    style = grid_style(section, section_type)
+    if style == "large_square":
+        default_cols = DEFAULT_LARGE_GRID_COLS
+        default_cell_mm = DEFAULT_LARGE_GRID_CELL_MM
+    else:
+        default_cols = DEFAULT_COMPOSITION_COLS
+        default_cell_mm = DEFAULT_COMPOSITION_CELL_MM
+    cols = int(section.get("cols", default_cols))
+    cell = dimension(section, "cell", "cell_mm", default_cell_mm)
+    return cols, cell
 
 
 def draw_centered(c: canvas.Canvas, text: str, x: float, y: float, width: float, font: str, size: float, color: str) -> None:
@@ -247,9 +274,8 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
 
         draw_section_title(c, title, left, y, title_color)
 
-        if section_type == "composition_grid":
-            cols = int(section.get("cols", 20))
-            cell = dimension(section, "cell", "cell_mm", DEFAULT_COMPOSITION_CELL_MM)
+        if section_type in {"composition_grid", "large_grid"}:
+            cols, cell = grid_defaults(section, section_type)
             rows, trailing = prepare_grid_lines(section)
             width = cols * cell
             x = float(section.get("x", (page_w - width) / 2))

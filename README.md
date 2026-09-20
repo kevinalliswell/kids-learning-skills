@@ -8,7 +8,7 @@
 
 | Skill | 用途 |
 | --- | --- |
-| [`make-handwriting-sheet`](skills/make-handwriting-sheet/README.md) | 生成 A4 小学中文楷书练字帖，支持作文格、横线格、一行示范一行空白 |
+| [`make-handwriting-sheet`](skills/make-handwriting-sheet/README.md) | 生成 A4 小学中文楷书练字帖，支持作文格、大方格、横线格、一行示范一行空白 |
 
 ## 仓库结构
 

@@ -2,7 +2,7 @@
 
 | Skill | 用途 | 状态 |
 | --- | --- | --- |
-| [`make-handwriting-sheet`](make-handwriting-sheet/README.md) | 生成小学中文楷书练字帖 PDF/PNG | 可用 |
+| [`make-handwriting-sheet`](make-handwriting-sheet/README.md) | 生成小学中文楷书练字帖 PDF/PNG，支持作文格、大方格、横线格 | 可用 |
 
 ## 目录规则
 
