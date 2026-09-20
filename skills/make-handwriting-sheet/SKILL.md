@@ -15,6 +15,7 @@ description: Create printable A4 Chinese handwriting practice worksheets with Ka
 2. Create an A4 printable worksheet.
    - Default to a green school-workbook style: outer border, centered title, name/grade blanks, section titles.
    - Use standard KaiTi/Kai-style fonts for sample characters. Prefer `C:\Windows\Fonts\simkai.ttf`, then `C:\Windows\Fonts\STKAITI.TTF`.
+   - Default to primary-school-friendly print dimensions: composition grid cells are 9mm square, ruled-line spacing is 10mm, and the ruled writing width is 180mm.
    - Use the bundled script `scripts/create_handwriting_sheet.py` for PDF/PNG generation when possible.
 
 3. Follow the practice-row rule.
@@ -86,3 +87,4 @@ Use `text` for normal automatic wrapping. Use `lines` when manual line breaks ar
 - In a Codex workspace, put transient configs under `work/`.
 - Put user-facing PDFs and previews under the current task's `outputs/` directory.
 - Use descriptive Chinese filenames, for example `三上一实用书写专项训练_练字帖.pdf`.
+- Use millimeter config keys when controlling paper size: `cell_mm`, `row_gap_mm`, and `width_mm`.

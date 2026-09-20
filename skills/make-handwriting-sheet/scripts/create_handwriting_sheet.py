@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -15,6 +16,11 @@ GREEN = "#5F8B4B"
 LINE_GREEN = "#98BE8F"
 BLACK = "#111111"
 PUNCTUATION = set("，。！？；：、,.!?;:）】》”’")
+
+DEFAULT_COMPOSITION_CELL_MM = 9.0
+DEFAULT_RULED_LINE_GAP_MM = 10.0
+DEFAULT_RULED_WIDTH_MM = 180.0
+DEFAULT_RULED_TEXT_INDENT_MM = 10.0
 
 
 FONT_CANDIDATES = [
@@ -39,6 +45,18 @@ def register_fonts() -> None:
     font_path = find_font()
     pdfmetrics.registerFont(TTFont("HWKai", str(font_path)))
     pdfmetrics.registerFont(TTFont("HWTitle", str(font_path)))
+
+
+def points_from_mm(value: float) -> float:
+    return float(value) * mm
+
+
+def dimension(section: dict, pt_key: str, mm_key: str, default_mm: float) -> float:
+    if mm_key in section:
+        return points_from_mm(float(section[mm_key]))
+    if pt_key in section:
+        return float(section[pt_key])
+    return points_from_mm(default_mm)
 
 
 def draw_centered(c: canvas.Canvas, text: str, x: float, y: float, width: float, font: str, size: float, color: str) -> None:
@@ -180,6 +198,9 @@ def wrap_ruled_text(text: str, font: str, size: float, max_width: float) -> list
         while lines[idx] and lines[idx][0] in PUNCTUATION and lines[idx - 1]:
             lines[idx - 1] += lines[idx][0]
             lines[idx] = lines[idx][1:]
+        while 0 < len(lines[idx]) < 3 and len(lines[idx - 1]) > 3:
+            lines[idx] = lines[idx - 1][-1] + lines[idx]
+            lines[idx - 1] = lines[idx - 1][:-1]
     return [line for line in lines if line]
 
 
@@ -189,7 +210,7 @@ def draw_ruled_pair(c: canvas.Canvas, x: float, line_y: float, width: float, sam
     c.line(x, line_y, x + width, line_y)
     c.setFont("HWKai", font_size)
     c.setFillColor(BLACK)
-    c.drawString(x + 34, line_y + 5.2, sample)
+    c.drawString(x + points_from_mm(DEFAULT_RULED_TEXT_INDENT_MM), line_y + 5.2, sample)
 
     blank_y = line_y - row_gap
     c.setStrokeColor(line_color)
@@ -213,7 +234,7 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
 
     page_w, _ = A4
     left = float(config.get("left_margin", 62))
-    bottom_limit = float(config.get("bottom_margin", 86))
+    bottom_limit = float(config.get("bottom_margin", 60))
     title_color = config.get("title_color", GREEN)
     line_color = config.get("line_color", LINE_GREEN)
 
@@ -228,7 +249,7 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
 
         if section_type == "composition_grid":
             cols = int(section.get("cols", 20))
-            cell = float(section.get("cell", 22))
+            cell = dimension(section, "cell", "cell_mm", DEFAULT_COMPOSITION_CELL_MM)
             rows, trailing = prepare_grid_lines(section)
             width = cols * cell
             x = float(section.get("x", (page_w - width) / 2))
@@ -253,9 +274,9 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
 
         else:
             font_size = float(section.get("font_size", 17))
-            row_gap = float(section.get("row_gap", 29))
-            width = float(section.get("width", 471))
-            x = float(section.get("x", left))
+            row_gap = dimension(section, "row_gap", "row_gap_mm", DEFAULT_RULED_LINE_GAP_MM)
+            width = dimension(section, "width", "width_mm", DEFAULT_RULED_WIDTH_MM)
+            x = float(section.get("x", (page_w - width) / 2))
             y -= float(section.get("title_gap", 44))
             lines = []
             raw_lines = [str(line) for line in section.get("lines", [])]
@@ -263,9 +284,9 @@ def build_pdf(config: dict, output_pdf: Path) -> None:
                 lines = raw_lines
             elif raw_lines:
                 for raw_line in raw_lines:
-                    lines.extend(wrap_ruled_text(raw_line, "HWKai", font_size, width - 44))
+                    lines.extend(wrap_ruled_text(raw_line, "HWKai", font_size, width - points_from_mm(DEFAULT_RULED_TEXT_INDENT_MM + 3)))
             else:
-                lines = wrap_ruled_text(str(section.get("text", "")), "HWKai", font_size, width - 44)
+                lines = wrap_ruled_text(str(section.get("text", "")), "HWKai", font_size, width - points_from_mm(DEFAULT_RULED_TEXT_INDENT_MM + 3))
 
             for sample in lines:
                 if y - row_gap < bottom_limit:

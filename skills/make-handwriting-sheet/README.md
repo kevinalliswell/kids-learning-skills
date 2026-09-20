@@ -18,6 +18,7 @@
 - 生成 PNG 预览图，方便交付前检查。
 - 作文格：一行楷书示范，一行空白格。
 - 横线格：一行楷书示范，一行空白横线。
+- 默认作文格为 9mm 方格，横线间隔为 10mm，横线书写宽度为 180mm。
 - 自动避开行首孤立标点。
 - 自动分页，避免长文本挤出页面。
 
@@ -46,6 +47,12 @@ python .\skills\make-handwriting-sheet\scripts\create_handwriting_sheet.py `
 ## 配置格式
 
 见 [`examples/basic.json`](examples/basic.json)。
+
+默认尺寸按小学生打印练习纸调校：
+
+- `composition_grid`：`cell_mm` 默认为 `9`，20 列时总宽 180mm。
+- `ruled_lines`：`row_gap_mm` 默认为 `10`，`width_mm` 默认为 `180`。
+- 如需低年级田字格，可把 `cell_mm` 调到 `14`，同时减少列数。
 
 常用 section 类型：
 
